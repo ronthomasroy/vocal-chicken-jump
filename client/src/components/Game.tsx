@@ -37,7 +37,7 @@ export default function Game() {
           <li>🗣️ <strong>Normal talk:</strong> Fast walk</li>
           <li>📢 <strong>Shout/Yell:</strong> Variable jump!</li>
         </ul>
-        <p className="text-xs mt-2 opacity-80">Louder shouts = higher jumps! Navigate the longer course!</p>
+        <p className="text-xs mt-2 opacity-80">Avoid the lava! Jump between platforms to survive!</p>
       </div>
     </div>
   );

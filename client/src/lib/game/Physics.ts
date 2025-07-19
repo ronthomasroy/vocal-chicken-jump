@@ -55,8 +55,8 @@ export class Physics {
       };
     }
 
-    // Check death zones (gaps in platforms)
-    if (chicken.y > groundY + 200) {
+    // Check lava death (touching or below ground level)
+    if (chickenBounds.y + chickenBounds.height >= groundY) {
       return { type: 'death' };
     }
 

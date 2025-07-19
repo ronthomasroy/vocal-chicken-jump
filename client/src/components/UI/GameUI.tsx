@@ -46,9 +46,12 @@ export default function GameUI() {
       <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg">
         <div className="flex items-center space-x-2">
           <span className="text-sm">Lives:</span>
-          {Array.from({ length: gameState.lives }, (_, i) => (
+          {Array.from({ length: Math.max(0, gameState.lives) }, (_, i) => (
             <span key={i} className="text-red-400">❤️</span>
           ))}
+          {gameState.lives <= 0 && (
+            <span className="text-gray-400 text-xs">No lives remaining</span>
+          )}
         </div>
       </div>
 

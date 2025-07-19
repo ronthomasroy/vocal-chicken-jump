@@ -142,17 +142,8 @@ export class Renderer {
   }
 
   public renderLevel(level: Level, cameraX: number) {
-    // Draw ground
-    this.ctx.fillStyle = '#228B22'; // Forest green
-    this.ctx.fillRect(-cameraX, level.groundY, 3000, 200);
-
-    // Draw grass texture on ground
-    this.ctx.fillStyle = '#32CD32'; // Lime green
-    for (let x = -cameraX; x < -cameraX + this.ctx.canvas.width + 100; x += 20) {
-      if (x % 40 === 0) {
-        this.ctx.fillRect(x, level.groundY, 3, 8);
-      }
-    }
+    // Draw lava ground (deadly)
+    this.drawLavaGround(-cameraX, level.groundY, this.ctx.canvas.width + 200, 200);
 
     // Draw platforms
     level.platforms.forEach(platform => {
@@ -161,6 +152,37 @@ export class Renderer {
 
     // Draw finish line
     this.drawFinishLine(level.endX - cameraX, level.groundY);
+  }
+
+  private drawLavaGround(x: number, y: number, width: number, height: number) {
+    // Lava base
+    const gradient = this.ctx.createLinearGradient(0, y, 0, y + height);
+    gradient.addColorStop(0, '#FF4500'); // Orange red
+    gradient.addColorStop(0.3, '#FF6347'); // Tomato
+    gradient.addColorStop(0.7, '#DC143C'); // Crimson
+    gradient.addColorStop(1, '#8B0000'); // Dark red
+
+    this.ctx.fillStyle = gradient;
+    this.ctx.fillRect(x, y, width, height);
+
+    // Lava bubbles animation
+    const time = Date.now() * 0.001;
+    this.ctx.fillStyle = 'rgba(255, 255, 0, 0.6)';
+    
+    for (let i = 0; i < 20; i++) {
+      const bubbleX = x + (i * width / 20) + Math.sin(time * 2 + i) * 10;
+      const bubbleY = y + 10 + Math.sin(time * 3 + i * 0.5) * 5;
+      const bubbleSize = 3 + Math.sin(time * 4 + i * 0.8) * 2;
+      
+      this.ctx.beginPath();
+      this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    // Lava glow effect
+    this.ctx.strokeStyle = '#FFD700'; // Gold glow
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(x, y, width, 20);
   }
 
   private drawPlatform(x: number, y: number, width: number, height: number) {
@@ -303,5 +325,39 @@ export class Renderer {
     this.ctx.fillRect(4 - legOffset, 22, 8, 3);
 
     this.ctx.restore();
+  }
+
+  public renderRespawnOverlay(respawnTimer: number) {
+    // Semi-transparent overlay
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+    // Respawn message
+    this.ctx.fillStyle = '#FFF';
+    this.ctx.font = 'bold 36px Arial';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText(
+      'Respawning...', 
+      this.ctx.canvas.width / 2, 
+      this.ctx.canvas.height / 2 - 40
+    );
+
+    // Countdown timer
+    this.ctx.font = 'bold 48px Arial';
+    this.ctx.fillStyle = '#FF6B6B';
+    this.ctx.fillText(
+      Math.ceil(respawnTimer).toString(), 
+      this.ctx.canvas.width / 2, 
+      this.ctx.canvas.height / 2 + 20
+    );
+
+    // Warning message
+    this.ctx.font = '20px Arial';
+    this.ctx.fillStyle = '#FFD700';
+    this.ctx.fillText(
+      'Avoid the lava! Jump between platforms!', 
+      this.ctx.canvas.width / 2, 
+      this.ctx.canvas.height / 2 + 80
+    );
   }
 }

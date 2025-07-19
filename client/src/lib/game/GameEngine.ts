@@ -11,6 +11,11 @@ interface GameState {
   level: number;
 }
 
+interface SpawnPoint {
+  x: number;
+  y: number;
+}
+
 export class GameEngine {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -22,6 +27,10 @@ export class GameEngine {
   private isPaused = false;
   private animationFrameId: number | null = null;
   private lastTime = 0;
+  private currentLives = 3;
+  private spawnPoint: SpawnPoint = { x: 100, y: 400 };
+  private isRespawning = false;
+  private respawnTimer = 0;
 
   // Callbacks
   public onGameStateChange: ((updates: Partial<GameState>) => void) | null = null;
@@ -36,7 +45,7 @@ export class GameEngine {
     this.ctx = ctx;
 
     // Initialize game components
-    this.chicken = new Chicken(100, 400);
+    this.chicken = new Chicken(this.spawnPoint.x, this.spawnPoint.y);
     this.level = new Level();
     this.physics = new Physics();
     this.renderer = new Renderer(this.ctx);
@@ -138,7 +147,10 @@ export class GameEngine {
     this.stop();
     
     // Reset game state
-    this.chicken = new Chicken(100, 400);
+    this.currentLives = 3;
+    this.isRespawning = false;
+    this.respawnTimer = 0;
+    this.chicken = new Chicken(this.spawnPoint.x, this.spawnPoint.y);
     this.level = new Level();
     
     // Restart the game
@@ -162,6 +174,15 @@ export class GameEngine {
   };
 
   private update(deltaTime: number) {
+    // Handle respawning
+    if (this.isRespawning) {
+      this.respawnTimer -= deltaTime;
+      if (this.respawnTimer <= 0) {
+        this.respawnChicken();
+      }
+      return; // Don't update game during respawn
+    }
+
     // Update chicken physics
     this.physics.updateChicken(this.chicken, deltaTime);
     
@@ -170,6 +191,8 @@ export class GameEngine {
     
     if (collision.type === 'platform') {
       this.chicken.land(collision.y);
+      // Update spawn point when landing on a platform
+      this.updateSpawnPoint(this.chicken.x, collision.y);
     } else if (collision.type === 'ground') {
       this.chicken.land(collision.y);
     } else if (collision.type === 'death') {
@@ -187,8 +210,14 @@ export class GameEngine {
     const newScore = Math.max(0, this.chicken.x - 50); // Start scoring after initial position
     this.onGameStateChange?.({ score: newScore });
 
-    // Check if chicken fell off the bottom of the screen
-    if (this.chicken.y > this.canvas.height + 100) {
+    // Check for lava death (fell into ground level or below)
+    if (this.chicken.y >= this.level.groundY - 10) {
+      this.handleDeath();
+      return;
+    }
+
+    // Check if chicken fell way off the screen
+    if (this.chicken.y > this.canvas.height + 200) {
       this.handleDeath();
     }
   }
@@ -203,16 +232,43 @@ export class GameEngine {
     // Render level
     this.renderer.renderLevel(this.level, cameraX);
     
-    // Render chicken
-    this.renderer.renderChicken(this.chicken, cameraX);
+    // Render chicken (unless respawning)
+    if (!this.isRespawning) {
+      this.renderer.renderChicken(this.chicken, cameraX);
+    }
+
+    // Render respawn overlay if needed
+    if (this.isRespawning) {
+      this.renderer.renderRespawnOverlay(this.respawnTimer);
+    }
   }
 
   private handleDeath() {
-    // Decrease lives
-    this.onGameStateChange?.({ lives: Math.max(0, 3 - 1) }); // Simplified for now
+    this.currentLives--;
+    this.onGameStateChange?.({ lives: this.currentLives });
     
-    // End game for now (could implement respawn logic)
-    this.onGameEnd?.(false);
+    if (this.currentLives <= 0) {
+      // Game over
+      this.onGameEnd?.(false);
+    } else {
+      // Start respawn process
+      this.isRespawning = true;
+      this.respawnTimer = 2.0; // 2 second respawn delay
+    }
+  }
+
+  private respawnChicken() {
+    this.chicken = new Chicken(this.spawnPoint.x, this.spawnPoint.y);
+    this.isRespawning = false;
+    this.respawnTimer = 0;
+  }
+
+  private updateSpawnPoint(x: number, y: number) {
+    // Only update spawn point if we've progressed forward
+    if (x > this.spawnPoint.x + 100) {
+      this.spawnPoint.x = x;
+      this.spawnPoint.y = y - 50; // Spawn slightly above the platform
+    }
   }
 
   private handleWin() {

@@ -58,6 +58,9 @@ export default function MainMenu() {
               </li>
             </ul>
             <p className="text-xs text-gray-600 mt-3">
+              <strong>Warning:</strong> Don't touch the lava! You have 3 lives - respawn at checkpoints when you fall.
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
               Note: You'll need to allow microphone access when prompted.
             </p>
           </div>
