@@ -9,33 +9,128 @@ export class Renderer {
   }
 
   public clear(width: number, height: number) {
-    // Draw sky gradient
+    // Draw enhanced sky gradient
     const gradient = this.ctx.createLinearGradient(0, 0, 0, height);
     gradient.addColorStop(0, '#87CEEB'); // Sky blue
-    gradient.addColorStop(0.6, '#98D8E8'); // Lighter blue
+    gradient.addColorStop(0.3, '#B0E0E6'); // Powder blue
+    gradient.addColorStop(0.7, '#98FB98'); // Pale green
     gradient.addColorStop(1, '#90EE90'); // Light green
 
     this.ctx.fillStyle = gradient;
     this.ctx.fillRect(0, 0, width, height);
 
-    // Draw simple clouds
+    // Draw enhanced background elements
+    this.drawBackground(width, height);
+  }
+
+  private drawBackground(width: number, height: number) {
+    // Draw mountains in the distance
+    this.drawMountains(width, height);
+    
+    // Draw clouds
     this.drawClouds(width, height);
+    
+    // Draw distant trees
+    this.drawDistantTrees(width, height);
+    
+    // Draw sun
+    this.drawSun(width, height);
+  }
+
+  private drawMountains(width: number, height: number) {
+    this.ctx.fillStyle = 'rgba(139, 69, 19, 0.3)'; // Semi-transparent brown
+    
+    // Draw mountain silhouettes
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, height * 0.6);
+    this.ctx.lineTo(width * 0.2, height * 0.4);
+    this.ctx.lineTo(width * 0.4, height * 0.5);
+    this.ctx.lineTo(width * 0.6, height * 0.3);
+    this.ctx.lineTo(width * 0.8, height * 0.45);
+    this.ctx.lineTo(width, height * 0.55);
+    this.ctx.lineTo(width, height);
+    this.ctx.lineTo(0, height);
+    this.ctx.closePath();
+    this.ctx.fill();
   }
 
   private drawClouds(width: number, height: number) {
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
     
     // Static clouds that move with camera
     const cloudPositions = [
-      { x: 200, y: 80, size: 30 },
-      { x: 600, y: 120, size: 40 },
-      { x: 1000, y: 60, size: 35 },
-      { x: 1400, y: 100, size: 25 },
+      { x: 150, y: 60, size: 25 },
+      { x: 400, y: 90, size: 35 },
+      { x: 700, y: 45, size: 30 },
+      { x: 1000, y: 80, size: 40 },
+      { x: 1300, y: 110, size: 28 },
+      { x: 1600, y: 70, size: 32 },
     ];
 
     cloudPositions.forEach(cloud => {
       this.drawCloud(cloud.x, cloud.y, cloud.size);
     });
+  }
+
+  private drawDistantTrees(width: number, height: number) {
+    this.ctx.fillStyle = 'rgba(34, 139, 34, 0.4)'; // Semi-transparent green
+    
+    // Draw simplified tree shapes in the background
+    const treePositions = [
+      { x: 100, y: height * 0.62, height: 60 },
+      { x: 250, y: height * 0.65, height: 50 },
+      { x: 380, y: height * 0.61, height: 65 },
+      { x: 520, y: height * 0.63, height: 55 },
+      { x: 680, y: height * 0.64, height: 45 },
+      { x: 820, y: height * 0.62, height: 70 },
+    ];
+
+    treePositions.forEach(tree => {
+      // Tree trunk
+      this.ctx.fillStyle = 'rgba(139, 69, 19, 0.3)';
+      this.ctx.fillRect(tree.x - 3, tree.y, 6, tree.height * 0.4);
+      
+      // Tree crown
+      this.ctx.fillStyle = 'rgba(34, 139, 34, 0.4)';
+      this.ctx.beginPath();
+      this.ctx.arc(tree.x, tree.y - tree.height * 0.3, tree.height * 0.6, 0, Math.PI * 2);
+      this.ctx.fill();
+    });
+  }
+
+  private drawSun(width: number, height: number) {
+    // Draw sun in upper right
+    const sunX = width * 0.85;
+    const sunY = height * 0.15;
+    
+    // Sun rays
+    this.ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
+    this.ctx.lineWidth = 2;
+    for (let i = 0; i < 8; i++) {
+      const angle = (i * Math.PI * 2) / 8;
+      this.ctx.beginPath();
+      this.ctx.moveTo(
+        sunX + Math.cos(angle) * 35,
+        sunY + Math.sin(angle) * 35
+      );
+      this.ctx.lineTo(
+        sunX + Math.cos(angle) * 50,
+        sunY + Math.sin(angle) * 50
+      );
+      this.ctx.stroke();
+    }
+    
+    // Sun body
+    this.ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+    this.ctx.beginPath();
+    this.ctx.arc(sunX, sunY, 30, 0, Math.PI * 2);
+    this.ctx.fill();
+    
+    // Sun inner glow
+    this.ctx.fillStyle = 'rgba(255, 255, 0, 0.6)';
+    this.ctx.beginPath();
+    this.ctx.arc(sunX, sunY, 20, 0, Math.PI * 2);
+    this.ctx.fill();
   }
 
   private drawCloud(x: number, y: number, size: number) {

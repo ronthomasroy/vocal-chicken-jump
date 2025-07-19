@@ -15,6 +15,7 @@ export class Chicken {
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
+    this.velocityX = 0; // Start completely stationary
   }
 
   public setSpeed(speed: number) {

@@ -75,7 +75,7 @@ export class GameEngine {
         case 'KeyA':
         case 'ArrowRight':
         case 'KeyD':
-          this.chicken.setSpeed(1); // Default forward speed
+          this.chicken.setSpeed(0); // Stop when keys released
           break;
       }
     });
@@ -84,19 +84,20 @@ export class GameEngine {
   public setVoiceInput(level: number) {
     if (!this.isRunning || this.isPaused) return;
 
-    // Convert voice level to chicken actions
-    if (level < 0.1) {
-      // Silent - stop or very slow movement
-      this.chicken.setSpeed(0.5);
-    } else if (level < 0.3) {
+    // Convert voice level to chicken actions - much more sensitive
+    if (level < 0.05) {
+      // Silent - completely stop
+      this.chicken.setSpeed(0);
+    } else if (level < 0.15) {
       // Whisper - slow walk
       this.chicken.setSpeed(1);
-    } else if (level < 0.7) {
+    } else if (level < 0.35) {
       // Normal talk - fast walk
       this.chicken.setSpeed(3);
     } else {
       // Shout - jump!
       this.chicken.jump();
+      this.chicken.setSpeed(3); // Keep moving forward when jumping
     }
   }
 
@@ -173,14 +174,15 @@ export class GameEngine {
       return;
     }
 
-    // Update score based on distance traveled
-    const newScore = Math.max(0, this.chicken.x - 50); // Start scoring after initial position
-    this.onGameStateChange?.({ score: newScore });
-
-    // Check win condition (reached end of level)
+    // Check win condition first (before updating score)
     if (this.chicken.x >= this.level.endX) {
       this.handleWin();
+      return; // Stop processing updates after win
     }
+
+    // Update score based on distance traveled (only if game hasn't ended)
+    const newScore = Math.max(0, this.chicken.x - 50); // Start scoring after initial position
+    this.onGameStateChange?.({ score: newScore });
 
     // Check if chicken fell off the bottom of the screen
     if (this.chicken.y > this.canvas.height + 100) {
