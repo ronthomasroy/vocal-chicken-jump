@@ -7,16 +7,16 @@ export default function GameUI() {
   
   // Determine voice state based on level
   const getVoiceState = () => {
-    if (voiceLevel < 0.05) return 'Silent';
-    if (voiceLevel < 0.15) return 'Whisper (Slow Walk)';
-    if (voiceLevel < 0.35) return 'Talk (Fast Walk)';
+    if (voiceLevel < 0.08) return 'Silent';
+    if (voiceLevel < 0.25) return 'Whisper (Slow Walk)';
+    if (voiceLevel < 0.45) return 'Talk (Fast Walk)';
     return `Shout (${Math.round(voiceLevel * 180)}% Jump!)`;
   };
 
   const getVoiceColor = () => {
-    if (voiceLevel < 0.05) return 'bg-gray-400';
-    if (voiceLevel < 0.15) return 'bg-blue-400';
-    if (voiceLevel < 0.35) return 'bg-green-400';
+    if (voiceLevel < 0.08) return 'bg-gray-400';
+    if (voiceLevel < 0.25) return 'bg-blue-400';
+    if (voiceLevel < 0.45) return 'bg-green-400';
     return 'bg-red-400';
   };
 

@@ -49,6 +49,7 @@ export class GameEngine {
     this.level = new Level();
     this.physics = new Physics();
     this.renderer = new Renderer(this.ctx);
+    this.currentLives = 3; // Initialize lives
 
     // Set up event listeners
     this.setupKeyboardFallback();
@@ -91,19 +92,19 @@ export class GameEngine {
   }
 
   public setVoiceInput(level: number) {
-    if (!this.isRunning || this.isPaused) return;
+    if (!this.isRunning || this.isPaused || this.isRespawning) return;
 
     // Pass voice level to chicken for variable jump power
     this.chicken.setVoiceLevel(level);
 
-    // Convert voice level to chicken actions - much more sensitive
-    if (level < 0.05) {
+    // Convert voice level to chicken actions - balanced sensitivity
+    if (level < 0.08) {
       // Silent - completely stop
       this.chicken.setSpeed(0);
-    } else if (level < 0.15) {
+    } else if (level < 0.25) {
       // Whisper - slow walk
       this.chicken.setSpeed(1);
-    } else if (level < 0.35) {
+    } else if (level < 0.45) {
       // Normal talk - fast walk
       this.chicken.setSpeed(3);
     } else {

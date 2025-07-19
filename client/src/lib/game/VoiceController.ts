@@ -7,11 +7,11 @@ export class VoiceController {
   private isRunning = false;
   private animationFrame: number | null = null;
 
-  // Calibration values - more sensitive settings
+  // Calibration values - balanced sensitivity
   private minLevel = 0;
-  private maxLevel = 120; // Lower max for better sensitivity
+  private maxLevel = 150; // Balanced max for good sensitivity
   private smoothedLevel = 0;
-  private smoothingFactor = 0.7; // Faster response
+  private smoothingFactor = 0.5; // Moderate response
 
   public onVoiceLevelChange: ((level: number) => void) | null = null;
 
@@ -29,10 +29,10 @@ export class VoiceController {
       // Create audio context
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       
-      // Create analyser - optimized for voice detection
+      // Create analyser - balanced for voice detection
       this.analyser = this.audioContext.createAnalyser();
-      this.analyser.fftSize = 512; // Higher resolution
-      this.analyser.smoothingTimeConstant = 0.3; // Less smoothing for responsiveness
+      this.analyser.fftSize = 256; // Standard resolution
+      this.analyser.smoothingTimeConstant = 0.6; // Moderate smoothing
 
       // Connect microphone to analyser
       this.microphone = this.audioContext.createMediaStreamSource(stream);
@@ -107,19 +107,17 @@ export class VoiceController {
     // Get frequency data
     this.analyser.getByteFrequencyData(this.dataArray);
 
-    // Focus on voice frequency range (85-255 Hz human voice fundamental)
-    const voiceRange = this.dataArray.slice(10, 80); // Focus on voice frequencies
-    const average = voiceRange.reduce((sum, value) => sum + value, 0) / voiceRange.length;
+    // Use full frequency range for better overall sensitivity
+    const average = this.dataArray.reduce((sum, value) => sum + value, 0) / this.dataArray.length;
 
-    // Normalize the level (0 to 1) with improved sensitivity
+    // Normalize the level (0 to 1) with balanced sensitivity
     const normalizedLevel = Math.max(0, (average - this.minLevel) / (this.maxLevel - this.minLevel));
 
     // Apply smoothing
     this.smoothedLevel += (normalizedLevel - this.smoothedLevel) * this.smoothingFactor;
 
-    // Clamp between 0 and 1 with slight boost for low levels
-    const boostedLevel = Math.pow(this.smoothedLevel, 0.7); // Gamma correction for sensitivity
-    const finalLevel = Math.max(0, Math.min(1, boostedLevel));
+    // Clamp between 0 and 1 with balanced response curve
+    const finalLevel = Math.max(0, Math.min(1, this.smoothedLevel));
 
     // Call the callback
     if (this.onVoiceLevelChange) {
