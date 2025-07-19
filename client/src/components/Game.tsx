@@ -35,9 +35,9 @@ export default function Game() {
         <ul className="text-sm space-y-1">
           <li>🔇 <strong>Whisper/Hum:</strong> Slow walk</li>
           <li>🗣️ <strong>Normal talk:</strong> Fast walk</li>
-          <li>📢 <strong>Shout/Yell:</strong> Jump!</li>
+          <li>📢 <strong>Shout/Yell:</strong> Variable jump!</li>
         </ul>
-        <p className="text-xs mt-2 opacity-80">Get Clucky to the end of the level!</p>
+        <p className="text-xs mt-2 opacity-80">Louder shouts = higher jumps! Navigate the longer course!</p>
       </div>
     </div>
   );

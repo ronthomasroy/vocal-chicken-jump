@@ -11,6 +11,7 @@ export class Chicken {
   private jumpPower: number = 400;
   private animationTime: number = 0;
   private isJumping: boolean = false;
+  private lastVoiceLevel: number = 0;
 
   constructor(x: number, y: number) {
     this.x = x;
@@ -23,12 +24,25 @@ export class Chicken {
     this.velocityX = speed * 60; // Convert to pixels per second
   }
 
-  public jump() {
+  public jump(voiceLevel: number = 0.5) {
     if (this.isOnGround && !this.isJumping) {
-      this.velocityY = -this.jumpPower;
+      // Variable jump power based on voice intensity
+      // Base jump power + bonus based on voice level
+      const jumpMultiplier = 1 + (voiceLevel * 0.8); // 1x to 1.8x jump power
+      const actualJumpPower = this.jumpPower * jumpMultiplier;
+      
+      this.velocityY = -actualJumpPower;
       this.isOnGround = false;
       this.isJumping = true;
+      
+      // Also add horizontal boost for louder shouts
+      const horizontalBoost = voiceLevel * 100; // Extra forward momentum
+      this.velocityX += horizontalBoost;
     }
+  }
+
+  public setVoiceLevel(level: number) {
+    this.lastVoiceLevel = level;
   }
 
   public land(y: number) {

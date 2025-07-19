@@ -84,6 +84,9 @@ export class GameEngine {
   public setVoiceInput(level: number) {
     if (!this.isRunning || this.isPaused) return;
 
+    // Pass voice level to chicken for variable jump power
+    this.chicken.setVoiceLevel(level);
+
     // Convert voice level to chicken actions - much more sensitive
     if (level < 0.05) {
       // Silent - completely stop
@@ -95,8 +98,8 @@ export class GameEngine {
       // Normal talk - fast walk
       this.chicken.setSpeed(3);
     } else {
-      // Shout - jump!
-      this.chicken.jump();
+      // Shout - jump with intensity-based power!
+      this.chicken.jump(level);
       this.chicken.setSpeed(3); // Keep moving forward when jumping
     }
   }
