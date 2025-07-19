@@ -28,7 +28,7 @@ export class GameEngine {
   private animationFrameId: number | null = null;
   private lastTime = 0;
   private currentLives = 3;
-  private spawnPoint: SpawnPoint = { x: 100, y: 400 };
+  private spawnPoint: SpawnPoint = { x: 100, y: 350 }; // Will be updated in constructor
   private isRespawning = false;
   private respawnTimer = 0;
 
@@ -45,8 +45,9 @@ export class GameEngine {
     this.ctx = ctx;
 
     // Initialize game components
-    this.chicken = new Chicken(this.spawnPoint.x, this.spawnPoint.y);
     this.level = new Level();
+    this.spawnPoint = { x: 100, y: this.level.groundY - 150 }; // Start above first platform
+    this.chicken = new Chicken(this.spawnPoint.x, this.spawnPoint.y);
     this.physics = new Physics();
     this.renderer = new Renderer(this.ctx);
     this.currentLives = 3; // Initialize lives
@@ -194,8 +195,6 @@ export class GameEngine {
       this.chicken.land(collision.y);
       // Update spawn point when landing on a platform
       this.updateSpawnPoint(this.chicken.x, collision.y);
-    } else if (collision.type === 'ground') {
-      this.chicken.land(collision.y);
     } else if (collision.type === 'death') {
       this.handleDeath();
       return;

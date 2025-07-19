@@ -15,10 +15,10 @@ export class Level {
   }
 
   private generateLevel() {
-    // Starting platform
+    // Starting platform - elevated above lava
     this.platforms.push({
       x: 0,
-      y: this.groundY,
+      y: this.groundY - 100,
       width: 200,
       height: 20
     });

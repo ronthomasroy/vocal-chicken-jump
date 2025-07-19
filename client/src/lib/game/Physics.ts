@@ -46,16 +46,8 @@ export class Physics {
       }
     }
 
-    // Check ground collision
+    // Check lava death (touching or below ground level) - NO SAFE GROUND
     const groundY = level.groundY;
-    if (chickenBounds.y + chickenBounds.height >= groundY) {
-      return {
-        type: 'ground',
-        y: groundY - chickenBounds.height
-      };
-    }
-
-    // Check lava death (touching or below ground level)
     if (chickenBounds.y + chickenBounds.height >= groundY) {
       return { type: 'death' };
     }
