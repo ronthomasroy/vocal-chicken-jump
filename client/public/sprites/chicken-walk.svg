@@ -1,0 +1,25 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Chicken body -->
+  <ellipse cx="20" cy="20" rx="18" ry="15" fill="#FFFACD" stroke="#FFD700" stroke-width="2"/>
+  
+  <!-- Head -->
+  <circle cx="12" cy="10" r="12" fill="#FFFACD" stroke="#FFD700" stroke-width="2"/>
+  
+  <!-- Beak -->
+  <polygon points="2,10 -5,12 2,14" fill="#FF8C00"/>
+  
+  <!-- Eye -->
+  <circle cx="8" cy="7" r="2" fill="#000"/>
+  <circle cx="9" cy="6" r="1" fill="#FFF"/>
+  
+  <!-- Wing -->
+  <ellipse cx="18" cy="18" rx="6" ry="8" fill="#FFD700" stroke="#FFD700" stroke-width="2" transform="rotate(15 18 18)"/>
+  
+  <!-- Legs -->
+  <line x1="12" y1="32" x2="12" y2="42" stroke="#FF8C00" stroke-width="3"/>
+  <line x1="28" y1="32" x2="28" y2="42" stroke="#FF8C00" stroke-width="3"/>
+  
+  <!-- Feet -->
+  <rect x="8" y="42" width="8" height="3" fill="#FF8C00"/>
+  <rect x="24" y="42" width="8" height="3" fill="#FF8C00"/>
+</svg>
